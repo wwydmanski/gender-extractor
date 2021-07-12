@@ -7,13 +7,14 @@ So, here it is - a name-to-gender extractor on an MIT license.
 
 ## Usage
 ```python
-from gender_extractor import GenderExtractor
+>>> from gender_extractor import GenderExtractor
 
-ext = GenderExtractor()
-print(ext.extract("Andrea"))
-> 'female'
-print(ext.extract("Andrea", "Italy"))
-> 'male'
+>>> ext = GenderExtractor()
+>>> print(ext.extract_gender("Andrea"))
+female
+
+>>> print(ext.extract_gender("Andrea", "Italy"))
+mostly male
 
 ```
 
