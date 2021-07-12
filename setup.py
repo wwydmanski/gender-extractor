@@ -14,7 +14,7 @@ setup(
     description="Extract the suspected gender given a name",
     long_description=README,
     long_description_content_type="text/markdown",
-    url="https://github.com/realpython/reader",
+    url="https://github.com/wwydmanski/gender-extractor",
     author="Witold Wydmański",
     author_email="witold.wydmanski@uj.edu.pl",
     license="MIT",
