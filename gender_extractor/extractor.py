@@ -56,6 +56,7 @@ class GenderExtractor:
                     self.name_freq[name][gender_idx][country_idx] += count
                 except KeyError:
                     self.name_freq[name] = [[0]*len(self.countries_encoding), [0]*len(self.countries_encoding)]
+                    self.name_freq[name][gender_idx][country_idx] += count
         
         save_loc = os.path.realpath(__file__)
         save_loc = os.path.dirname(save_loc)
@@ -76,20 +77,20 @@ class GenderExtractor:
         name = name.lower()
         try:
             try:
-                m_count = self.name_freq[name][0][self.countries_encoding[country.lower()]]
-                f_count = self.name_freq[name][1][self.countries_encoding[country.lower()]]
+                m_count = self.name_freq[name][0][self.countries_encoding[country.lower()]] + 1e-6
+                f_count = self.name_freq[name][1][self.countries_encoding[country.lower()]] + 1e-6
             except (KeyError, AttributeError):
-                m_count = sum(self.name_freq[name][0])
-                f_count = sum(self.name_freq[name][1])
+                m_count = sum(self.name_freq[name][0]) + 1e-6
+                f_count = sum(self.name_freq[name][1]) + 1e-6
 
             if f_count/m_count > 0.9:
                 return "female"
             elif f_count/m_count > 0.6:
                 return "mostly female"
-            elif f_count/m_count < 0.4:
-                return "mostly male"
-            elif f_count/m_count < 0.1:
+            elif m_count/f_count > 0.9:
                 return "male"
+            elif m_count/f_count > 0.6:
+                return "mostly male"
             else:
                 return "ambiguous"
         except KeyError:
