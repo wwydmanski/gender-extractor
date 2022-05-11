@@ -67,33 +67,45 @@ class GenderExtractor:
         """ Extracts the suspected gender from the first name of a person.
 
         Args:
-            name (str): First name
+            name (str): First name. Case-insensitive.
             country (str, optional): Country that we're focusing. If none selected,
-                the result will follow a general statistic.
+                the result will follow a general statistic. Case-insensitive.
 
         Returns:
             str: One of [male, mostly male, ambiguous, mostly female, female]
+            
+        Raises:
+            KeyError: If country isn't in self.countries_encoding
         """
         name = name.lower()
+        if country is None:
+            country_code = None
+        else:
+            country = country.lower()
+            country_code = self.countries_encoding[country]
+        
         try:
-            try:
-                m_count = self.name_freq[name][0][self.countries_encoding[country.lower()]] + 1e-6
-                f_count = self.name_freq[name][1][self.countries_encoding[country.lower()]] + 1e-6
-            except (KeyError, AttributeError):
-                m_count = sum(self.name_freq[name][0]) + 1e-6
-                f_count = sum(self.name_freq[name][1]) + 1e-6
-
-            if f_count/m_count > 0.9:
-                return "female"
-            elif f_count/m_count > 0.6:
-                return "mostly female"
-            elif m_count/f_count > 0.9:
-                return "male"
-            elif m_count/f_count > 0.6:
-                return "mostly male"
-            else:
-                return "ambiguous"
+            m_counts = self.name_freq[name][0]
+            f_counts = self.name_freq[name][1]
         except KeyError:
+            return "ambiguous"
+        
+        if country_code is not None:
+            m_count = m_counts[country_code] + 1e-6
+            f_count = f_counts[country_code] + 1e-6
+        else:
+            m_count = sum(m_counts) + 1e-6
+            f_count = sum(f_counts) + 1e-6
+
+        if f_count/m_count > 0.9:
+            return "female"
+        elif f_count/m_count > 0.6:
+            return "mostly female"
+        elif m_count/f_count > 0.9:
+            return "male"
+        elif m_count/f_count > 0.6:
+            return "mostly male"
+        else:
             return "ambiguous"
 
 if __name__=="__main__":
